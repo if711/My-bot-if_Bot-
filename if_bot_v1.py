@@ -1,5 +1,6 @@
 import telebot
 import sqlite3
+from datetime import datetime
 
 bot = telebot.TeleBot('6277074360:AAFc43T6H8s3n6xJYox430lVkDlUv1t0fyo')
 dt = None
@@ -15,13 +16,15 @@ def start(message):
     cu.close()
     c.close()
 
-    bot.send_message(message.chat.id, 'Приветствую! Готов к работе, введите пожалуйста сегодняшнюю дату:')
-    bot.register_next_step_handler(message,user_dt)
+    current_datetime = datetime.now()
+    current_datetime1 = current_datetime.strftime("%m-%d-%Y- %H:%M")
 
-def user_dt(message):
+    text1 = "Приветствую! Сейчас: "
+    text2 = "Введите наименование выполненной затраты:"
+    bot.send_message(message.chat.id, f"{text1}{current_datetime1} \n{text2}")
+
     global dt
-    dt = message.text.strip()
-    bot.send_message(message.chat.id, 'Введите наименование выполненной затраты:')
+    dt = current_datetime1
     bot.register_next_step_handler(message, user_n)
 
 def user_n(message):
@@ -45,4 +48,3 @@ def user_s(message):
 
 
 bot.polling(none_stop=True)
-
