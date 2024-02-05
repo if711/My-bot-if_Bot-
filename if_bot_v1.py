@@ -5,13 +5,15 @@ from datetime import datetime
 bot = telebot.TeleBot('6277074360:AAFc43T6H8s3n6xJYox430lVkDlUv1t0fyo')
 dt = None
 n = None
+sum = None
+id = None
 
 @bot.message_handler(commands=['start'])
 def start(message):
     c = sqlite3.connect('if_bot.db')
     cu = c.cursor()
 
-    cu.execute("""CREATE TABLE IF NOT EXISTS Base_7 (date TEXT, name TEXT, sum TEXT)""")
+    cu.execute("""CREATE TABLE IF NOT EXISTS Base_7 (id INTEGER, date TEXT, name TEXT, sum TEXT)""")
     c.commit()
     cu.close()
     c.close()
@@ -34,11 +36,14 @@ def user_n(message):
     bot.register_next_step_handler(message, user_s)
 
 def user_s(message):
+    global sum
+    global id
     sum = message.text.strip()
+    id = message.chat.id
     c = sqlite3.connect('if_bot.db')
     cu = c.cursor()
 
-    cu.execute ("INSERT INTO Base_7 (date, name, sum) VALUES ('%s', '%s', '%s')" % (dt, n, sum))
+    cu.execute("INSERT INTO  Base_7 (id, date, name, sum) VALUES(?,?,?,?);", (id, dt, n, sum))
     c.commit()
     cu.close()
     c.close()
