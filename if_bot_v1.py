@@ -3,18 +3,20 @@ import sqlite3
 from datetime import datetime
 
 bot = telebot.TeleBot('6277074360:AAFc43T6H8s3n6xJYox430lVkDlUv1t0fyo')
-dt = None
-n = None
+date = None
+name = None
+sum = None
+id = None
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    c = sqlite3.connect('if_bot.db')
-    cu = c.cursor()
+    conn = sqlite3.connect('if_bot.db')
+    cur = conn.cursor()
 
-    cu.execute("""CREATE TABLE IF NOT EXISTS Base_7 (date TEXT, name TEXT, sum TEXT)""")
-    c.commit()
-    cu.close()
-    c.close()
+    cur.execute("""CREATE TABLE IF NOT EXISTS Base_7 (id INTEGER, date TEXT, name TEXT, sum TEXT)""")
+    conn.commit()
+    cur.close()
+    conn.close()
 
     current_datetime = datetime.now()
     current_datetime1 = current_datetime.strftime("%d-%m-%Y- %H:%M:%S")
@@ -23,25 +25,28 @@ def start(message):
     text2 = "Введите наименование выполненной затраты:"
     bot.send_message(message.chat.id, f"{text1}{current_datetime1} \n{text2}")
 
-    global dt
-    dt = current_datetime1
-    bot.register_next_step_handler(message, user_n)
+    global date
+    date = current_datetime1
+    bot.register_next_step_handler(message, user_name)
 
-def user_n(message):
-    global n
-    n = message.text.strip()
+def user_name(message):
+    global name
+    name = message.text.strip()
     bot.send_message(message.chat.id, 'Введите потраченную сумму на затрату:')
-    bot.register_next_step_handler(message, user_s)
+    bot.register_next_step_handler(message, user_sum)
 
-def user_s(message):
+def user_sum(message):
+    global sum
+    global id
     sum = message.text.strip()
-    c = sqlite3.connect('if_bot.db')
-    cu = c.cursor()
+    id = message.chat.id
+    conn = sqlite3.connect('if_bot.db')
+    cur = conn.cursor()
 
-    cu.execute ("INSERT INTO Base_7 (date, name, sum) VALUES ('%s', '%s', '%s')" % (dt, n, sum))
-    c.commit()
-    cu.close()
-    c.close()
+    cur.execute("INSERT INTO  Base_7 (id, date, name, sum) VALUES(?,?,?,?);", (id, date, name, sum))
+    conn.commit()
+    cur.close()
+    conn.close()
 
     bot.send_message(message.chat.id, 'Данные успешно сохранены!')
 
