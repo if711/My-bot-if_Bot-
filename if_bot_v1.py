@@ -17,7 +17,7 @@ def start(message):
     c.close()
 
     current_datetime = datetime.now()
-    current_datetime1 = current_datetime.strftime("%m-%d-%Y- %H:%M")
+    current_datetime1 = current_datetime.strftime("%d-%m-%Y- %H:%M:%S")
 
     text1 = "Приветствую! Сейчас: "
     text2 = "Введите наименование выполненной затраты:"
