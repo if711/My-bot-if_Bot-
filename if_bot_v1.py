@@ -8,6 +8,7 @@ name = None
 sum = None
 id = None
 
+
 @bot.message_handler(commands=['start'])
 def start(message):
     conn = sqlite3.connect('if_bot.db')
@@ -29,11 +30,13 @@ def start(message):
     date = current_datetime1
     bot.register_next_step_handler(message, user_name)
 
+
 def user_name(message):
     global name
     name = message.text.strip()
     bot.send_message(message.chat.id, 'Введите потраченную сумму на затрату:')
     bot.register_next_step_handler(message, user_sum)
+
 
 def user_sum(message):
     global sum
@@ -48,14 +51,33 @@ def user_sum(message):
     cur.close()
     conn.close()
 
-    bot.send_message(message.chat.id, 'Данные успешно сохранены!')
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(telebot.types.InlineKeyboardButton('Сохранённые данные', callback_data='date'))
+    bot.send_message(message.chat.id, 'Данные успешно сохранены!', reply_markup=markup)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callbeck(call):
+    conn = sqlite3.connect('if_bot.db')
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM Base_7')
+    base = cur.fetchall()
+
+    into = ''
+    for el in base:
+        into += f'Дата произведённых затрат: {el[1]}, Наименование затрат: {el[2]}, Сумма на затраты: {el[3]}\n'
+
+    cur.close()
+    conn.close()
+
+    bot.send_message(call.message.chat.id, into)
 
 
 @bot.message_handler(commands=['inf'])
 def user_inf(message):
-    bot.send_message(message.chat.id, 'Привет! \nДанный бот предназначен для записи, хранения и обработки данных. В частности, я его использую для хранения данных о текущих затратах. \nКоманды бота: \n  /start - бот начинает свою работу; \n  /inf - выводит это сообщение')
-
-
+    bot.send_message(message.chat.id,
+                     'Привет! \nДанный бот предназначен для записи, хранения и обработки данных. В частности, я его использую для хранения данных о текущих затратах. \nКоманды бота: \n  /start - бот начинает свою работу; \n  /inf - выводит это сообщение')
 
 
 bot.polling(none_stop=True)
