@@ -51,6 +51,15 @@ def user_sum(message):
     markup = telebot.types.InlineKeyboardMarkup()
     markup.add(telebot.types.InlineKeyboardButton('Сохранённые данные',callback_data= 'date'))
     bot.send_message(message.chat.id, 'Данные успешно сохранены!', reply_markup=markup)
+@bot.message_handler(commands=['del'])
+def user_del(message):
+    conn = sqlite3.connect('if_bot.db')
+    cur = conn.cursor()
+    cur.execute('DELETE FROM Base_7')
+    conn.commit()
+    cur.close()
+    conn.close()
+    bot.send_message(message.chat.id, 'Табличные данные успешно очищены!')
 
 @bot.message_handler(commands=['data'])
 def user_dat(message):
