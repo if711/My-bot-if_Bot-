@@ -51,5 +51,11 @@ def user_sum(message):
     bot.send_message(message.chat.id, 'Данные успешно сохранены!')
 
 
+@bot.message_handler(commands=['inf'])
+def user_inf(message):
+    bot.send_message(message.chat.id, 'Привет! \nДанный бот предназначен для записи, хранения и обработки данных. В частности, я его использую для хранения данных о текущих затратах. \nКоманды бота: \n  /start - бот начинает свою работу; \n  /inf - выводит это сообщение')
+
+
+
 
 bot.polling(none_stop=True)
